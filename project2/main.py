@@ -1,9 +1,4 @@
-"""
-main.py
-Entry point for the Dice Simulator.
-Gets input from the user, runs the simulation and generates the PDF report.
-No logic here — only calls to dicesimulator and generate_report.
-"""
+""" gets input from the user, runs the simulation and generates the PDF report. """
 
 import os
 import time
@@ -80,13 +75,13 @@ def print_summary(analysis: dict):
     if nd == 2:
         print(f"\n🎰  Q6 — Doubles: {analysis['doubles_percentage']:.2f}%")
 
-    # bonus 1 — Casino verdict
+    # bonus 1 — casino verdict
     most_v, _ = analysis["most_frequent"]
     verdict = "🤑 Lucky night! Go to the casino!" if most_v > 3.5 else "😬 Bad luck... stay home tonight!"
     print(f"\n{'─' * 50}")
     print(f"  {verdict}")
 
-    # bonus 2 — Lucky number
+    # bonus 2 — lucky number
     lucky = random.choice(analysis["results"])
     lucky_emoji = DICE_EMOJI.get(int(lucky), "🎲")
     print(f"  🍀 Your lucky number tonight: {lucky_emoji} {lucky}")
@@ -102,14 +97,14 @@ def main():
         MIN_THROWS, MAX_THROWS
     )
 
-    # Run simulation
+    #run simulation
     analysis = run_analysis(num_throws, num_dice)
     roll_animation(num_dice)
 
-    # Print results
+    #print results
     print_summary(analysis)
 
-    # Generate PDF
+    #generate PDF
     output_path = os.path.join(os.path.dirname(__file__), "dice_report.pdf")
     print("\n📄 Generating PDF report...", end="", flush=True)
     generate_report(analysis, output_path)
