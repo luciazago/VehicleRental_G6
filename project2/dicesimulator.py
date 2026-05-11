@@ -5,10 +5,8 @@ MIN_THROWS = 10
 MAX_THROWS = 1000
 
 def simulate(num_throws: int, num_dice: int):
-    """
-    Simulate rolling num_dice dice num_throws times.
-    Returns a 2D numpy array of shape (num_throws, num_dice).
-    """
+    """simulate rolling num_dice dice num_throws times.
+    it returns a 2D numpy array of shape (num_throws, num_dice)."""
     return np.random.randint(1, 7, size=(num_throws, num_dice))
 
 
@@ -70,12 +68,12 @@ def average(results: np.ndarray):
 
 
 def minimum(results: np.ndarray):
-    #Devuelve el valor minimo del array
+    #devuelve el valor minimo del array
     return int(np.min(results))
 
 
 def maximum(results: np.ndarray):
-    #Devuelve el valor maximo del array
+    #devuelve el valor maximo del array
     return int(np.max(results))
 
 def evenness(results: np.ndarray, num_throws: int) -> dict:
@@ -93,7 +91,7 @@ def evenness(results: np.ndarray, num_throws: int) -> dict:
 
 def doubles_percentage(rolls: np.ndarray):
     #calcula el porcentaje de dobles cuando lanzas 2 dados.
-    #Only valid for 2 dice
+    #only valid for 2 dice
     doubles = np.sum(rolls[:, 0] == rolls[:, 1])
     return round(float(doubles / len(rolls) * 100), 2)
 
