@@ -1,8 +1,4 @@
-"""
-report.py
-Generates a simple PDF report from the analysis results.
-Uses matplotlib for the chart and reportlab for the PDF.
-"""
+"""generates a simple PDF report from the analysis results. uses matplotlib for the chart and reportlab for the PDF."""
 
 import io
 import matplotlib
@@ -16,11 +12,11 @@ from reportlab.platypus import (
 from reportlab.lib.styles import getSampleStyleSheet
 
 def make_bar_chart(analysis: dict):
-    #Crea el gráfico de barras de los resultados y lo devuelve como imagen PNG
+    #gráfico de barras de los resultados y lo devuelve como PNG
     dist = analysis["distribution"]
     num_dice = analysis["num_dice"]
 
-    # Show full expected range even if some values have 0 count
+    #show full expected range even if some values have 0 count
     expected_range = list(range(1, 7)) if num_dice == 1 else list(range(7, 13))
     counts = [dist.get(v, 0) for v in expected_range]
 
@@ -42,7 +38,7 @@ def make_bar_chart(analysis: dict):
 
 
 def build_results_table(analysis: dict) -> list:
-    """Build the raw rolls table data: one row per throw."""
+    """build the raw rolls table data: one row per throw."""
     num_dice = analysis["num_dice"]
     rolls = analysis["rolls"]
     results = analysis["results"]
@@ -62,7 +58,7 @@ def build_results_table(analysis: dict) -> list:
 
 
 def generate_report(analysis: dict, output_path: str):
-    """Build and save the PDF report."""
+    """build and save the PDF."""
     styles = getSampleStyleSheet()
     style_normal = styles["Normal"]
     style_h1 = styles["Heading1"]
@@ -70,7 +66,7 @@ def generate_report(analysis: dict, output_path: str):
 
     story = []
 
-    # Title
+    # title
     story.append(Paragraph("Dice Simulator Report", style_h1))
     dice_label = "1 die" if analysis["num_dice"] == 1 else "2 dice"
     story.append(Paragraph(
@@ -79,7 +75,7 @@ def generate_report(analysis: dict, output_path: str):
     ))
     story.append(Spacer(1, 0.4 * cm))
 
-    # --- Results table (only show if throws are small enough to be readable) ---
+    # results
     if analysis["num_throws"] <= 100:
         story.append(Paragraph("Results", style_h2))
         table_data = build_results_table(analysis)
@@ -102,7 +98,7 @@ def generate_report(analysis: dict, output_path: str):
         ))
         story.append(Spacer(1, 0.4 * cm))
 
-    # --- Bar chart ---
+    # bar chart
     chart_bytes = make_bar_chart(analysis)
     img = RLImage(io.BytesIO(chart_bytes))
     img.drawWidth  = 14 * cm
@@ -110,7 +106,7 @@ def generate_report(analysis: dict, output_path: str):
     story.append(img)
     story.append(Spacer(1, 0.5 * cm))
 
-    # --- Questions and answers ---
+    # q&a
     story.append(Paragraph("Analysis Questions", style_h2))
 
     def qa(question: str, answer: str):
@@ -118,27 +114,27 @@ def generate_report(analysis: dict, output_path: str):
         story.append(Paragraph(answer, style_normal))
         story.append(Spacer(1, 0.3 * cm))
 
-    # Q1 – Distribution
+    # Q1 
     dist = analysis["distribution"]
     dist_text = "  ".join(f"Result {v}: {c} times" for v, c in sorted(dist.items()))
     qa("1. What is the distribution of total results?", dist_text)
 
-    # Q2 – Most / least frequent
+    # Q2 
     most_v, most_c = analysis["most_frequent"]
     least_v, least_c = analysis["least_frequent"]
     qa("2. What is the most and what is the least frequent result?",
        f"Most frequent: {most_v} ({most_c} times).  Least frequent: {least_v} ({least_c} times).")
 
-    # Q3 – Empirical probabilities (range depends on num_dice)
+    # Q3
     emp = analysis["empirical_probabilities"]
     emp_text = "  ".join(f"Result {v}: {p:.2%}" for v, p in sorted(emp.items()))
     qa("3. What is the empirical probability of rolling each number?", emp_text)
 
-    # Q4 – Average, min, max
+    # Q4 
     qa("4. What's the average, min, and max result?",
        f"Average: {analysis['average']}  |  Min: {analysis['minimum']}  |  Max: {analysis['maximum']}")
 
-    # Q5 – Evenness (only 1 die)
+    # Q5 
     if analysis["num_dice"] == 1:
         ev = analysis["evenness"]
         qa("5. How evenly distributed are the results of a single dice?",
@@ -147,7 +143,7 @@ def generate_report(analysis: dict, output_path: str):
         qa("5. How evenly distributed are the results of a single dice?",
            "Not applicable when throwing two dice (the sum follows a triangular distribution).")
 
-    # Q6 – Doubles (only 2 dice)
+    # Q6 
     if analysis["num_dice"] == 2:
         qa("6. What percentage of rolls were doubles?",
            f"{analysis['doubles_percentage']}% of rolls were doubles.")
@@ -155,15 +151,15 @@ def generate_report(analysis: dict, output_path: str):
         qa("6. What percentage of rolls were doubles?",
            "Not applicable when throwing one die.")
 
-    # Q7 – Even results
+    # Q7 
     qa("7. What are the percentage of having pairs (even results)?",
        f"{analysis['even_percentage']}% of results were even numbers.")
 
-    # Q8 – Odd results
+    # Q8 
     qa("8. What are the percentage of having odds?",
        f"{analysis['odd_percentage']}% of results were odd numbers.")
 
-    # Build PDF
+    #build PDF
     doc = SimpleDocTemplate(
         output_path,
         pagesize=A4,
