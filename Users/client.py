@@ -7,6 +7,7 @@ class Client(User):
         super().__init__(name, date_of_birth, user_id)
         self.__vehicles = []
 
+    @property
     def vehicles(self):
         return list(self.__vehicles)
 
